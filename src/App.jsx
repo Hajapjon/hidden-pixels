@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <section>
+    <section>
     <h1>My First React App on Vite</h1>
     </section>
 
