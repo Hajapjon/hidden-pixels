@@ -1,13 +1,11 @@
 import './App.css'
-import HeroSection from './components/HeroSection'
-import NavBar from './components/NavBar'
+import LandingPage from '../src/pages/LandingPage'
 function App() {
 
 
   return (
     <>
-    <NavBar/>
-    <HeroSection/>
+    <LandingPage/>
     </>
   )
 }
