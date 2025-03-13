@@ -6,7 +6,7 @@ function NavBar() {
   return (
     <>
       <nav>
-        <div className="w-screen bg-[#46467A] h-[60px] flex justify-between items-center md:h-[80px]">
+        <div className="w-screen bg-[#303055] h-[60px] flex justify-between items-center md:h-[80px]">
           <img
             src={logo}
             alt="logo"
@@ -17,7 +17,7 @@ function NavBar() {
               <li>
                 <a
                   href="/login"
-                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-white bg-[#FFC212] hover:bg-[#303055]"
+                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-[#303055] bg-[#f5ecde] hover:bg-[#F9B0C3] duration-300"
                 >
                   Log in
                 </a>
@@ -25,7 +25,7 @@ function NavBar() {
               <li>
                 <a
                   href="/signup"
-                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] bg-white hover:bg-gray-200"
+                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-[#303055] bg-[#FFC212] hover:bg-[#F9B0C3] duration-300"
                 >
                   Sign up
                 </a>
@@ -36,7 +36,7 @@ function NavBar() {
           <div className="relative md:hidden">
             {/* ปุ่ม Hamburger */}
             <button
-              className="m-5 text-white text-xl"
+              className="m-5 text-white text-xl cursor-pointer"
               onClick={() => setIsOpen(!isOpen)}
             >
               ☰
@@ -44,7 +44,7 @@ function NavBar() {
 
             {/* เมนู */}
             {isOpen && (
-              <div className="absolute top-16 right-0 bg-white shadow-lg p-2 w-screen text-center">
+              <div className="absolute z-10 top-16 right-0 bg-white shadow-lg p-2 w-screen text-center">
                 <ul className="flex flex-col space-y-2">
                   <li>
                     <a
@@ -57,7 +57,7 @@ function NavBar() {
                   <li>
                     <a
                       href="/signup"
-                      className="border rounded-full block p-2 text-white bg-[#392346] hover:bg-gray-200"
+                      className="border rounded-full block p-2 text-white bg-[#FFC212] hover:bg-[#303055]"
                     >
                       Sign up
                     </a>
