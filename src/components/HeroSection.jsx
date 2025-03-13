@@ -16,11 +16,12 @@ function HeroSection() {
           Where Games Hide Their Secrets
         </p>
       </div>
+      {/* hero image */}
       <div >
         <img
           src={easterEgg}
           alt="easter egg"
-          className="mt-4 rounded-3xl md:h-[529px]"
+          className="mt-4 w-full h-auto rounded-3xl max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl object-contain"
         />
       </div>
       <div className="mt-4 text-lg md:text-xl max-w-2xl text-[#E0DFFD] md:w-[347px] md:h-[347px] md:flex md:items-center md:justify-center">

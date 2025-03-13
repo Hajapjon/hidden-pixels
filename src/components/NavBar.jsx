@@ -6,7 +6,7 @@ function NavBar() {
   return (
     <>
       <nav>
-        <div className="w-screen bg-[#303055] h-[60px] flex justify-between items-center md:h-[80px]">
+        <div className="w-full bg-[#303055] h-[60px] flex justify-between items-center md:h-[80px]">
           <img
             src={logo}
             alt="logo"
