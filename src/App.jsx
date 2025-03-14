@@ -1,15 +1,11 @@
-
 import './App.css'
-
+import LandingPage from '../src/pages/LandingPage'
 function App() {
 
 
   return (
     <>
-      <section>
-    <h1>My First React App on Vite</h1>
-    </section>
-
+    <LandingPage/>
     </>
   )
 }
