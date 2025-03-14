@@ -76,7 +76,7 @@ function LandingPage() {
       </div>
       {/* View more */}
       <div className="flex justify-center p-8">
-        <a href="" className="underline tex-[16px] font-[Poppins] font-medium leading-[24px]">View more</a>
+        <a href="" className="underline text-[16px] font-[Poppins] font-medium leading-[24px]">View more</a>
       </div>
 
       <Footer />
