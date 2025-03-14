@@ -6,18 +6,20 @@ function NavBar() {
   return (
     <>
       <nav>
-        <div className="w-full bg-[#303055] h-[60px] flex justify-between items-center md:h-[80px]">
+        <div className="w-full bg-[#303055] h-[60px] flex justify-between items-center lg:h-[80px]">
+          <a href="">
           <img
             src={logo}
             alt="logo"
-            className="w-[40px] h-[40px] m-3 md:w-[60px] md:h-[60px] md:ml-20"
+            className="w-[40px] h-[40px] m-3 lg:w-[60px] lg:h-[60px] lg:ml-20"
           />
-          <div className="md:w-[276px] md:h-[48px] md:mr-25">
-            <ul className="hidden md:flex md:justify-between">
+          </a>
+          <div className="lg:w-[276px] lg:h-[48px] lg:mr-25">
+            <ul className="hidden lg:flex lg:justify-between">
               <li>
                 <a
                   href="/login"
-                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-[#303055] bg-[#f5ecde] hover:bg-[#F9B0C3] duration-300"
+                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-[#303055] bg-[#e5dac7] hover:bg-[#f5ecde]  duration-300"
                 >
                   Log in
                 </a>
@@ -25,7 +27,7 @@ function NavBar() {
               <li>
                 <a
                   href="/signup"
-                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-[#303055] bg-[#FFC212] hover:bg-[#F9B0C3] duration-300"
+                  className="border rounded-full block py-3 text-center w-[127px] h-[48px] leading-6 text-[16px] text-[#303055] bg-[#FFC212] hover:bg-[#ffd351] duration-300"
                 >
                   Sign up
                 </a>
@@ -33,7 +35,7 @@ function NavBar() {
             </ul>
           </div>
           {/* mobile responsive*/}
-          <div className="relative md:hidden">
+          <div className="relative lg:hidden">
             {/* ปุ่ม Hamburger */}
             <button
               className="m-5 text-white text-xl cursor-pointer"
