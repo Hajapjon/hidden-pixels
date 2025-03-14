@@ -49,9 +49,9 @@ function ArticleSection() {
           <a href="" className="hover:bg-[#DAD6D1] p-3 rounded-xl">General</a>
         </div>
         {/* search bar */}
-        <div className="hidden lg:flex lg:w-[360px] lg:mr-10">
+        <div className="hidden lg:flex lg:w-[360px] lg:mr-10 items-center">
           <Input />
-          <div className="hidden lg:block absolute right-15 bottom-[-50px]">
+          <div className="hidden lg:block absolute right-15">
             <img src={search} alt="search icon" />
           </div>
         </div>
