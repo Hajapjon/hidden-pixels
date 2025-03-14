@@ -16,7 +16,7 @@ function ArticleSection() {
       <div className="h-[64px] flex items-center p-4 font-semibold text-2xl leading-8 text-[#26231E] font-[Poppins]">
         Latest articles
       </div>
-      <div className="w-screen h-[172px] p-4 bg-[#EFEEEB] flex flex-col gap-4 md:hidden">
+      <div className="w-screen h-[172px] p-4 bg-[#EFEEEB] flex flex-col gap-4 lg:hidden">
         {/* search bar */}
         <Input />
         <div className="absolute top-188 right-8">
@@ -41,17 +41,17 @@ function ArticleSection() {
       </div>
       {/* desktop search & filter */}
       {/* selector */}
-      <div className="hidden md:flex md:justify-between md:w-full md:h-[80px] md:items-center md:bg-[#EFEEEB]">
-        <div className="hidden md:flex md:items-center md:justify-around md:gap-2 md:w-[438px] md:text-[16px] md:font-medium md:font-[Poppins] md:text-[#43403B] md:ml-10">
+      <div className="hidden lg:flex lg:justify-between lg:w-full lg:h-[80px] lg:items-center lg:bg-[#EFEEEB]">
+        <div className="hidden lg:flex lg:items-center lg:justify-around lg:gap-2 lg:w-[438px] lg:text-[16px] lg:font-medium lg:font-[Poppins] lg:text-[#43403B] lg:ml-10">
           <a href="" className="hover:bg-[#DAD6D1] p-3 rounded-xl">Highlight</a>
           <a href="" className="hover:bg-[#DAD6D1] p-3 rounded-xl">Cat</a>
           <a href="" className="hover:bg-[#DAD6D1] p-3 rounded-xl">Inspiration</a>
           <a href="" className="hover:bg-[#DAD6D1] p-3 rounded-xl">General</a>
         </div>
         {/* search bar */}
-        <div className="hidden md:flex md:w-[360px] md:mr-10">
+        <div className="hidden lg:flex lg:w-[360px] lg:mr-10">
           <Input />
-          <div className="hidden md:block absolute right-15 bottom-[-50px]">
+          <div className="hidden lg:block absolute right-15 bottom-[-50px]">
             <img src={search} alt="search icon" />
           </div>
         </div>
