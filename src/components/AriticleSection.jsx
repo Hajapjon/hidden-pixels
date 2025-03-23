@@ -9,9 +9,15 @@ import {
 import search from "../assets/icons/search.png";
 import { blogPosts } from "@/data/blogPosts";
 import BlogCard from "@/components/BlogCard";
+import { useState } from "react";
 
 function ArticleSection() {
   const categories = ["Highlight", "Cat", "Inspiration", "General"];
+  const [category, setCategory] = useState("Highlight");
+  const filteredPosts =
+    category === "Highlight"
+      ? blogPosts
+      : blogPosts.filter((post) => post.category === category);
 
   return (
     <>
@@ -30,14 +36,14 @@ function ArticleSection() {
             Category
           </div>
           {/*Mobile Selector */}
-          <Select>
+          <Select onValueChange={(value) => setCategory(value)}>
             <SelectTrigger className="w-full bg-white font-[Poppins] text-[#75716B] font-medium !h-[48px] text-[16px]">
               <SelectValue placeholder="Highlight" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((categorie, index) => (
-                <SelectItem key={index} value={categorie}>
-                  {categorie}
+              {categories.map((item, index) => (
+                <SelectItem key={index} value={item}>
+                  {item}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -48,12 +54,18 @@ function ArticleSection() {
       {/* Desktop Selector */}
       <div className="hidden lg:flex lg:justify-between lg:w-full lg:h-[80px] lg:items-center lg:bg-[#EFEEEB]">
         <div className="hidden lg:flex lg:items-center lg:justify-around lg:gap-2 lg:w-[438px] lg:text-[16px] lg:font-medium lg:font-[Poppins] lg:text-[#43403B] lg:ml-10">
-          {categories.map((categorie, index) => (
+          {categories.map((item, index) => (
             <button
               key={index}
-              className=" p-3 rounded-xl hover:cursor-pointer hover:bg-[#DAD6D1]"
+              className={`${
+                category === item
+                  ? "bg-blue-500 text-white" // สีปุ่มเมื่อถูกเลือก
+                  : "bg-gray-200 hover:bg-gray-300" // สีปุ่มเมื่อไม่ได้ถูกเลือก
+              }  p-3 rounded-xl hover:cursor-pointer hover:bg-[#DAD6D1]`}
+              disabled={category === item} // ปิดการคลิกปุ่มที่ถูกเลือก
+              onClick={() => setCategory(item)} // เปลี่ยน State เมื่อคลิก
             >
-              {categorie}
+              {item}
             </button>
           ))}
         </div>
@@ -68,7 +80,7 @@ function ArticleSection() {
 
       {/* Blog posts card */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {blogPosts.map((post, index) => (
+        {filteredPosts.map((post, index) => (
           <BlogCard
             key={index}
             image={post.image}
