@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import search from "../assets/icons/search.png";
+import searchIcon from "../assets/icons/search.png"; 
 import BlogCard from "@/components/BlogCard";
 
 function formatDate(isoDate) {
@@ -19,13 +20,14 @@ function formatDate(isoDate) {
 function ArticleSection() {
   const categories = ["Highlight", "Cat", "Inspiration", "General"];
   const [category, setCategory] = useState("Highlight");
+  const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const limit = 6;
 
-  const fetchPosts = async (selectedCategory, pageNum = 1, append = false) => {
+  const fetchPosts = async (selectedCategory, pageNum = 1, append = false, searchTerm = "") => {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:4001/posts", {
@@ -33,6 +35,7 @@ function ArticleSection() {
           page: pageNum,
           limit,
           ...(selectedCategory !== "Highlight" && { category: selectedCategory }),
+          ...(searchTerm && { keyword: searchTerm }),
         },
       });
 
@@ -51,9 +54,9 @@ function ArticleSection() {
   };
 
   useEffect(() => {
-    setPage(1); // reset page
-    fetchPosts(category, 1, false);
-  }, [category]);
+    setPage(1);
+    fetchPosts(category, 1, false, keyword);
+  }, [category, keyword]); // ✅ ถ้ามี keyword หรือ category เปลี่ยน → refetch ใหม่
 
   const handleCategoryChange = (value) => {
     setCategory(value);
@@ -62,7 +65,11 @@ function ArticleSection() {
   const handleViewMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchPosts(category, nextPage, true);
+    fetchPosts(category, nextPage, true, keyword);
+  };
+
+  const handleSearchChange = (e) => {
+    setKeyword(e.target.value);
   };
 
   return (
@@ -73,10 +80,14 @@ function ArticleSection() {
       </div>
 
       {/* Mobile Filter */}
-      <div className="w-screen h-[172px] p-4 bg-[#EFEEEB] flex flex-col gap-4 lg:hidden">
-        <Input />
-        <div className="absolute top-188 right-8">
-          <img src={search} alt="search icon" />
+      <div className="w-screen h-auto p-4 bg-[#EFEEEB] flex flex-col gap-4 lg:hidden">
+        <div className="relative">
+          <Input
+            value={keyword}
+            onChange={handleSearchChange}
+            placeholder="Search articles..."
+          />
+          <img src={searchIcon} alt="search icon" className="absolute right-4 top-3 w-6 h-6" />
         </div>
         <div className="h-[76px] flex flex-col gap-1">
           <div className="font-[Poppins] font-medium leading-6 text-[#75716B]">
@@ -98,8 +109,8 @@ function ArticleSection() {
       </div>
 
       {/* Desktop Filter */}
-      <div className="hidden lg:flex lg:justify-between lg:w-full lg:h-[80px] lg:items-center lg:bg-[#EFEEEB]">
-        <div className="hidden lg:flex lg:items-center lg:justify-around lg:gap-2 lg:w-[438px] lg:text-[16px] lg:font-medium lg:font-[Poppins] lg:text-[#43403B] lg:ml-10">
+      <div className="hidden lg:flex lg:justify-between lg:w-full lg:h-[80px] lg:items-center lg:bg-[#EFEEEB] p-4">
+        <div className="flex gap-4">
           {categories.map((item) => (
             <button
               key={item}
@@ -107,7 +118,7 @@ function ArticleSection() {
                 category === item
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 hover:bg-gray-300"
-              } p-3 rounded-xl hover:cursor-pointer`}
+              } px-4 py-2 rounded-xl hover:cursor-pointer font-medium`}
               disabled={category === item}
               onClick={() => handleCategoryChange(item)}
             >
@@ -115,11 +126,13 @@ function ArticleSection() {
             </button>
           ))}
         </div>
-        <div className="hidden lg:flex lg:w-[360px] lg:mr-10 items-center">
-          <Input />
-          <div className="hidden lg:block absolute right-15">
-            <img src={search} alt="search icon" />
-          </div>
+        <div className="relative w-[360px]">
+          <Input
+            value={keyword}
+            onChange={handleSearchChange}
+            placeholder="Search articles..."
+          />
+          <img src={searchIcon} alt="search icon" className="absolute right-4 top-3 w-6 h-6" />
         </div>
       </div>
 
@@ -127,22 +140,23 @@ function ArticleSection() {
       <div className="px-4 max-w-screen-xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {posts.map((post) => (
-            <BlogCard
-              key={post.id}
-              image={post.image}
-              category={post.category}
-              title={post.title}
-              description={post.description}
-              author={post.author}
-              date={post.date}
-            />
+            <Link key={post.id} to={`/posts/${post.id}`}>
+              <BlogCard
+                id={post.id}
+                image={post.image}
+                category={post.category}
+                title={post.title}
+                description={post.description}
+                author={post.author}
+                date={post.date}
+              />
+            </Link>
           ))}
         </div>
-        
       </div>
 
       {/* View More */}
-      { hasMore && (
+      {hasMore && (
         <div className="flex justify-center p-8">
           <button
             onClick={handleViewMore}
