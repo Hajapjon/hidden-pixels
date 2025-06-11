@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import {
   FaRegThumbsUp,
@@ -23,18 +23,32 @@ function ViewPostPage() {
   const [likes, setLikes] = useState(321);
 
   useEffect(() => {
-    async function fetchPost() {
-      try {
-        const res = await axios.get(`http://localhost:4001/posts/${id}`);
-        setPost(res.data.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+  async function fetchPost() {
+    try {
+      const { data, error } = await supabase
+        .from("posts")
+        .select(`*, categories(name)`) 
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("❌ Supabase Error:", error);
+        return;
       }
+
+      setPost({
+        ...data,
+        category: data.categories?.name,
+      });
+    } catch (err) {
+      console.error("❌ Unexpected Error:", err);
+    } finally {
+      setLoading(false);
     }
-    fetchPost();
-  }, [id]);
+  }
+
+  fetchPost();
+}, [id]);
 
   const handleCopyLink = () => {
     const link = window.location.href;
@@ -112,7 +126,11 @@ function ViewPostPage() {
 
             {/* Content */}
             <div className="markdown text-gray-800 leading-7 sm:leading-8 mb-10">
-              <ReactMarkdown>{post.content}</ReactMarkdown>
+              <ReactMarkdown>
+                {post.content
+                  ?.replaceAll("\\n", "\n")
+                  ?.replaceAll("\n", "  \n")}
+              </ReactMarkdown>
             </div>
 
             {/* Action Buttons */}

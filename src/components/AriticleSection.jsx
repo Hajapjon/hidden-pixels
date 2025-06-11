@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { supabase } from "@/lib/supabaseClient";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import searchIcon from "../assets/icons/search.png"; 
+import searchIcon from "../assets/icons/search.png";
 import BlogCard from "@/components/BlogCard";
 
 function formatDate(isoDate) {
@@ -18,7 +18,7 @@ function formatDate(isoDate) {
 }
 
 function ArticleSection() {
-  const categories = ["Highlight", "Cat", "Inspiration", "General"];
+  const [categories, setCategories] = useState([{ id: null, name: "Highlight" }]); // ✅ เพิ่ม Highlight เป็น default
   const [category, setCategory] = useState("Highlight");
   const [keyword, setKeyword] = useState("");
   const [posts, setPosts] = useState([]);
@@ -27,27 +27,60 @@ function ArticleSection() {
   const [hasMore, setHasMore] = useState(true);
   const limit = 6;
 
+  // ✅ โหลด categories จาก Supabase
+useEffect(() => {
+  async function fetchCategories() {
+    const { data, error } = await supabase.from("categories").select("*").order("id");
+    if (!error) {
+      setCategories([{ id: null, name: "Highlight" }, ...data]); // ✅ reset ใหม่ทุกครั้ง ไม่เบิ้ล
+    }
+  }
+
+  fetchCategories();
+}, []);
+
+
+  // ✅ เปลี่ยนเป็นใช้ name → id
   const fetchPosts = async (selectedCategory, pageNum = 1, append = false, searchTerm = "") => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:4001/posts", {
-        params: {
-          page: pageNum,
-          limit,
-          ...(selectedCategory !== "Highlight" && { category: selectedCategory }),
-          ...(searchTerm && { keyword: searchTerm }),
-        },
-      });
 
-      const newPosts = res.data.data.map((post) => ({
+      const from = (pageNum - 1) * limit;
+      const to = from + limit - 1;
+
+      let query = supabase
+        .from("posts")
+        .select("*, categories(name)")
+        .order("date", { ascending: false })
+        .range(from, to);
+
+      const selected = categories.find((cat) => cat.name === selectedCategory);
+
+      if (selected?.id) {
+        query = query.eq("category_id", selected.id); // ✅ filter ด้วย category_id จากชื่อ
+      }
+
+      if (searchTerm) {
+        query = query.ilike("title", `%${searchTerm}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("❌ Supabase error:", error);
+        return;
+      }
+
+      const newPosts = data.map((post) => ({
         ...post,
+        category: post.categories?.name || post.category,
         date: formatDate(post.date),
       }));
 
       setPosts((prev) => (append ? [...prev, ...newPosts] : newPosts));
       setHasMore(newPosts.length === limit);
     } catch (error) {
-      console.error("❌ Error fetching posts:", error);
+      console.error("❌ Unexpected error:", error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +89,7 @@ function ArticleSection() {
   useEffect(() => {
     setPage(1);
     fetchPosts(category, 1, false, keyword);
-  }, [category, keyword]); // ✅ ถ้ามี keyword หรือ category เปลี่ยน → refetch ใหม่
+  }, [category, keyword, categories]);
 
   const handleCategoryChange = (value) => {
     setCategory(value);
@@ -99,8 +132,8 @@ function ArticleSection() {
             </SelectTrigger>
             <SelectContent>
               {categories.map((item) => (
-                <SelectItem key={item} value={item}>
-                  {item}
+                <SelectItem key={item.name} value={item.name}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -113,16 +146,16 @@ function ArticleSection() {
         <div className="flex gap-4">
           {categories.map((item) => (
             <button
-              key={item}
+              key={item.name}
               className={`${
-                category === item
+                category === item.name
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 hover:bg-gray-300"
               } px-4 py-2 rounded-xl hover:cursor-pointer font-medium`}
-              disabled={category === item}
-              onClick={() => handleCategoryChange(item)}
+              disabled={category === item.name}
+              onClick={() => handleCategoryChange(item.name)}
             >
-              {item}
+              {item.name}
             </button>
           ))}
         </div>
