@@ -1,16 +1,15 @@
 import HeroSection from "../components/HeroSection";
-import NavBar from "../components/NavBar";
-import { Footer } from "@/components/Footer";
 import ArticleSection from "@/components/AriticleSection";
 
 
 function LandingPage() {
   return (
     <>
-      <NavBar />
+    <div className="mt-[60px] lg:mt-[80px]">
       <HeroSection />
       <ArticleSection />
-      <Footer />
+    </div>
+      
     </>
   );
 }
