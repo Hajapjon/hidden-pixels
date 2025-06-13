@@ -250,7 +250,7 @@ function ViewPostPage() {
                       {c.users?.name || "Unknown"}
                     </p>
                     <p className="text-xs text-gray-400 mb-2">
-                      {new Date(c.created_at).toLocaleString("th-TH", {
+                      {new Date(c.created_at).toLocaleString("en-EN", {
                         day: "2-digit",
                         month: "long",
                         year: "numeric",
