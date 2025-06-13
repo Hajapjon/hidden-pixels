@@ -44,7 +44,8 @@ function LayoutWrapper({ children }) {
 
 function App() {
   return (
-    <Router>
+    <div className="font-[Poppins]">
+      <Router>
       <AuthProvider>
         <LayoutWrapper>
           <Routes>
@@ -57,6 +58,7 @@ function App() {
         </LayoutWrapper>
       </AuthProvider>
     </Router>
+    </div>
   );
 }
 

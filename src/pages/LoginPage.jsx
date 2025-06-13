@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "@/components/NavBar";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
@@ -47,21 +46,20 @@ export default function LoginPage() {
 
   return (
     <>
-      <NavBar />
-      <div className="min-h-screen flex items-center justify-center bg-[#f9f7f3]">
-        <div className="bg-white px-10 py-12 rounded-lg shadow-md w-full max-w-md">
+      <div className="min-h-screen flex items-start justify-center bg-[#f9f7f3] mt-[60px] lg:mt-[80px] pt-12">
+        <div className="bg-[#EFEEEB] px-20 py-12 rounded-lg shadow-md w-full max-w-2xl">
           <h2 className="text-2xl font-bold text-center mb-6 text-[#26221f]">
             Log in
           </h2>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm mb-1 text-[#26221f]">Email</label>
+              <label className="block text-sm mb-1 text-[#75716B]">Email</label>
               <input
                 name="email"
                 type="email"
                 placeholder="Email"
-                className="w-full border rounded-md p-2"
+                className="w-full border rounded-md p-2 bg-white"
                 value={form.email}
                 onChange={handleChange}
                 required
@@ -69,14 +67,14 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm mb-1 text-[#26221f]">
+              <label className="block text-sm mb-1 text-[#75716B]">
                 Password
               </label>
               <input
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="w-full border rounded-md p-2"
+                className="w-full border rounded-md p-2 bg-white"
                 value={form.password}
                 onChange={handleChange}
                 required
