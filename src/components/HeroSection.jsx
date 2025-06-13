@@ -1,40 +1,43 @@
-import easterEgg from "../assets/images/easterEgg.jpg";
+import authorImage from "../assets/images/authorImage.png";
 
 function HeroSection() {
   return (
-    <>
-    <div className="lg:h-[800px] lg:flex lg:justify-center lg:items-center bg-[#46467A]">
-    <div className="h-[600px] flex flex-col lg:flex-row lg:justify-between justify-center items-center text-center bg-[#46467A] text-white p-6 lg:h-[600px] lg:w-[1300px] lg:gap-10">
-      <div>
-        <h1 className="text-3xl lg:text-5xl font-bold uppercase bg-gradient-to-b from-[#44c1ff] to-[#eb678a] bg-clip-text text-transparent drop-shadow-lg font-['Press_Start_2P']">
-          Hidden
-        </h1>
-        <h1 className="text-3xl lg:text-5xl font-bold uppercase text-[#57C7FF] drop-shadow-lg font-['Press_Start_2P']">
-          Pixels
-        </h1>
-        <p className="mt-4 text-lg lg:text-xl max-w-2xl text-[#E0DFFD] drop-shadow-lg font-[Poppins]">
-          Where Games Hide Their Secrets
-        </p>
-      </div>
-      {/* hero image */}
-      <div >
-        <img
-          src={easterEgg}
-          alt="easter egg"
-          className="mt-4 w-full h-auto rounded-3xl max-w-xs sm:max-w-sm lg:max-w-lg xl:max-w-xl object-contain"
-        />
-      </div>
-      <div className="mt-4 text-lg lg:text-xl max-w-2xl text-[#E0DFFD] lg:w-[347px] lg:h-[347px] lg:flex lg:items-center lg:justify-center font-[Poppins]">
-      <p>
-        Explore legendary Easter Eggs, forgotten gems, and mind-blowing hidden
-        details in gaming history.
-      </p>
-      </div>
-    </div>
+    <div className="bg-[#F9F8F6]  flex items-center justify-center py-6">
+      <div className="flex flex-col items-center text-center p-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-12 lg:w-[1200px] lg:text-left text-[#26231E]">
 
+        {/* Left: Text */}
+        <div className="max-w-md lg:text-right">
+          <h1 className="text-3xl lg:text-5xl font-semibold uppercase text-[#26231E]">
+            Stay Informed, Stay Inspired
+          </h1>
+          <p className="mt-4 text-[#75716B] font-medium">
+            Discover a World of Knowledge at Your Fingertips. Your Daily Dose of Inspiration and Information.
+          </p>
+        </div>
+
+        {/* Center: Image */}
+        <div className="my-6 lg:my-0">
+          <img
+            src={authorImage}
+            alt="author"
+            className="rounded-xl w-full max-w-xs sm:max-w-sm lg:max-w-[300px] xl:max-w-[360px] object-cover"
+          />
+        </div>
+
+        {/* Right: Author Info */}
+        <div className="text-[#43403B] max-w-md text-lg lg:text-[16px] lg:leading-relaxed font-[Poppins]">
+          <p className="text-xs text-[#75716B] mb-1">-Author</p>
+          <p className="font-semibold text-2xl mb-3">Thompson P.</p>
+          <p className="mt-3 font-medium text-[#75716B]">
+            I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.
+          </p>
+          <p className="mt-3 font-medium text-[#75716B]">
+            When I’m not writing, I spend time volunteering at my local animal shelter, helping cats find loving homes.
+          </p>
+        </div>
+
+      </div>
     </div>
-    
-    </>
   );
 }
 

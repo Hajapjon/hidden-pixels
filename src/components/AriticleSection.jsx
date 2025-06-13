@@ -108,7 +108,7 @@ useEffect(() => {
   return (
     <>
       {/* Article Bar */}
-      <div className="h-[64px] flex items-center p-4 font-semibold text-2xl leading-8 text-[#26231E] font-[Poppins]">
+      <div className="h-[64px] flex items-center p-4 font-semibold text-2xl leading-8 text-[#26231E] bg-[#F9F8F6]">
         Latest articles
       </div>
 
@@ -149,9 +149,9 @@ useEffect(() => {
               key={item.name}
               className={`${
                 category === item.name
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              } px-4 py-2 rounded-xl hover:cursor-pointer font-medium`}
+                  ? "bg-[#DAD6D1] text-[#43403B]"
+                  : "bg-[#EFEEEB] hover:bg-[#DAD6D1]"
+              } px-4 py-2 rounded-[8px] hover:cursor-pointer font-medium`}
               disabled={category === item.name}
               onClick={() => handleCategoryChange(item.name)}
             >
@@ -170,8 +170,8 @@ useEffect(() => {
       </div>
 
       {/* Blog Post Cards */}
-      <div className="px-4 max-w-screen-xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="px-4 max-w-screen-xl mx-auto bg-[#F9F8F6]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
           {posts.map((post) => (
             <Link key={post.id} to={`/posts/${post.id}`}>
               <BlogCard
@@ -190,7 +190,7 @@ useEffect(() => {
 
       {/* View More */}
       {hasMore && (
-        <div className="flex justify-center p-8">
+        <div className="flex justify-center p-8 bg-[#F9F8F6]">
           <button
             onClick={handleViewMore}
             className="underline text-[16px] font-[Poppins] font-medium leading-[24px] cursor-pointer"
