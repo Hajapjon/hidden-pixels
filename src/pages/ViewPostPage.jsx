@@ -1,220 +1,296 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import {
   FaRegThumbsUp,
+  FaThumbsUp,
   FaFacebookF,
   FaLinkedinIn,
   FaTwitter,
 } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import thomson from "../assets/images/thomson.png";
-import NavBar from "../components/NavBar";
-import { Footer } from "@/components/Footer";
+import authorImage from "../assets/images/authorImage.png";
 import ReactMarkdown from "react-markdown";
 
 function ViewPostPage() {
   const { id } = useParams();
+  const { user } = useAuth();
+
   const [post, setPost] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isLoggedIn = false;
-  const [likes, setLikes] = useState(321);
-
   useEffect(() => {
-    async function fetchPost() {
-      try {
-        const res = await axios.get(`http://localhost:4001/posts/${id}`);
-        setPost(res.data.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+    async function fetchData() {
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*, categories(name)")
+        .eq("id", id)
+        .single();
+
+      if (error) console.error(error);
+      else {
+        setPost({ ...data, category: data.categories?.name });
+        setLikes(data.likes_count || 0);
       }
+
+      if (user) {
+        const { data: likeData } = await supabase
+          .from("likes")
+          .select("id")
+          .eq("post_id", id)
+          .eq("user_id", user.id)
+          .single();
+        setHasLiked(!!likeData);
+      }
+
+      const { data: commentData } = await supabase
+        .from("comments")
+        .select("comment_text, created_at, users(name, profile_pic)")
+        .eq("post_id", id)
+        .order("created_at", { ascending: false });
+
+      if (commentData) setComments(commentData);
+      setLoading(false);
     }
-    fetchPost();
-  }, [id]);
+
+    fetchData();
+  }, [id, user]);
+
+  const handleLikeToggle = async () => {
+    if (!user) return alert("กรุณา Login ก่อน");
+
+    if (hasLiked) {
+      await supabase
+        .from("likes")
+        .delete()
+        .eq("post_id", id)
+        .eq("user_id", user.id);
+      await supabase
+        .from("posts")
+        .update({ likes_count: likes - 1 })
+        .eq("id", id);
+      setLikes(likes - 1);
+      setHasLiked(false);
+    } else {
+      await supabase.from("likes").insert({ post_id: id, user_id: user.id });
+      await supabase
+        .from("posts")
+        .update({ likes_count: likes + 1 })
+        .eq("id", id);
+      setLikes(likes + 1);
+      setHasLiked(true);
+    }
+  };
+
+  const handleComment = async () => {
+    if (!user) return alert("กรุณา Login ก่อน");
+    if (!comment.trim()) return toast.warning("พิมพ์คอมเมนต์ก่อน");
+
+    const { error } = await supabase.from("comments").insert({
+      post_id: id,
+      user_id: user.id,
+      comment_text: comment,
+    });
+
+    if (!error) {
+      setComments([
+        {
+          comment_text: comment,
+          created_at: new Date().toISOString(),
+          users: {
+            name: user.name || user.username,
+            profile_pic: user.profile_pic || "/default-avatar.png",
+          },
+        },
+        ...comments,
+      ]);
+      setComment("");
+      toast.success("ส่งคอมเมนต์แล้ว!");
+    } else toast.error("ส่งไม่สำเร็จ");
+  };
 
   const handleCopyLink = () => {
-    const link = window.location.href;
-    navigator.clipboard.writeText(link);
-    toast.success("ลิงก์ถูกคัดลอกไปที่ Clipboard แล้ว!");
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("คัดลอกลิงก์แล้ว");
   };
 
   const handleShare = (platform) => {
     const link = encodeURIComponent(window.location.href);
     let url = "";
-
-    if (platform === "facebook") {
+    if (platform === "facebook")
       url = `https://www.facebook.com/sharer/sharer.php?u=${link}`;
-    } else if (platform === "twitter") {
+    if (platform === "twitter")
       url = `https://twitter.com/intent/tweet?url=${link}`;
-    } else if (platform === "linkedin") {
+    if (platform === "linkedin")
       url = `https://www.linkedin.com/sharing/share-offsite/?url=${link}`;
-    }
-
     window.open(url, "_blank");
   };
 
-  const handleLike = () => {
-    if (!isLoggedIn) {
-      alert("กรุณา Login ก่อนถึงจะกดไลก์ได้");
-      return;
-    }
-    setLikes(likes + 1);
-  };
-
   if (loading)
-    return <div className="text-center p-8 text-gray-500">Loading...</div>;
+    return <div className="text-center py-10 text-gray-500">Loading...</div>;
   if (!post)
-    return <div className="text-center p-8 text-red-500">Post not found</div>;
+    return <div className="text-center py-10 text-red-500">ไม่พบโพสต์</div>;
 
   return (
-    <>
-      <NavBar />
-      <div className="max-w-6xl mx-auto p-4 sm:p-8">
-        {/* Post Image */}
-        {post.image && (
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-[200px] md:h-[400px] object-cover rounded-lg mb-8"
-          />
-        )}
+    <div className="mt-[60px] lg:mt-[80px] max-w-6xl mx-auto p-4 sm:p-8">
+      {post.image && (
+        <img
+          src={post.image}
+          alt={post.title}
+          className="w-full h-[200px] md:h-[400px] object-cover rounded-lg mb-8"
+        />
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* Left Content */}
-          <div className="lg:col-span-2">
-            {/* Tag + Date */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                {post.category || "General"}
-              </span>
-              <span>
-                {new Date(post.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="lg:col-span-2">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+              {post.category || "General"}
+            </span>
+            <span>
+              {new Date(post.date).toLocaleDateString("en-En", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
+          </div>
 
-            {/* Title */}
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-[#26231E]">
-              {post.title}
-            </h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-[#26231E]">
+            {post.title}
+          </h1>
+          <p className="text-gray-600 text-base sm:text-lg mb-8">
+            {post.description}
+          </p>
+          <div className="markdown text-gray-800 leading-7 sm:leading-8 mb-10">
+            <ReactMarkdown>
+              {post.content?.replaceAll("\\n", "\n")?.replaceAll("\n", "  \n")}
+            </ReactMarkdown>
+          </div>
 
-            {/* Description */}
-            <p className="text-gray-600 text-base sm:text-lg mb-8">
-              {post.description}
-            </p>
+          <div className="bg-[#F5F3F0] p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
+            <button
+              onClick={handleLikeToggle}
+              className="flex items-center gap-2 px-4 py-2 border border-black rounded-full hover:bg-gray-100"
+            >
+              {hasLiked ? <FaThumbsUp /> : <FaRegThumbsUp />} <span>{likes}</span>
+            </button>
 
-            {/* Content */}
-            <div className="markdown text-gray-800 leading-7 sm:leading-8 mb-10">
-              <ReactMarkdown>{post.content}</ReactMarkdown>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="bg-[#F5F3F0] p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleLike}
-                  className="flex items-center gap-2 px-4 py-2 border border-black rounded-full hover:bg-gray-100"
-                >
-                  <FaRegThumbsUp />
-                  <span>{likes}</span>
-                </button>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleCopyLink}
-                  className="flex items-center gap-2 px-4 py-2 border border-black rounded-full hover:bg-gray-100"
-                >
-                  <IoCopyOutline />
-                  <span>Copy</span>
-                </button>
-
-                <button
-                  onClick={() => handleShare("facebook")}
-                  className="w-10 h-10 flex items-center justify-center border border-black rounded-full hover:bg-gray-100"
-                >
-                  <FaFacebookF />
-                </button>
-
-                <button
-                  onClick={() => handleShare("linkedin")}
-                  className="w-10 h-10 flex items-center justify-center border border-black rounded-full hover:bg-gray-100"
-                >
-                  <FaLinkedinIn />
-                </button>
-
-                <button
-                  onClick={() => handleShare("twitter")}
-                  className="w-10 h-10 flex items-center justify-center border border-black rounded-full hover:bg-gray-100"
-                >
-                  <FaTwitter />
-                </button>
-              </div>
-            </div>
-
-            {/* Comment Section */}
-            <div className="mt-8">
-              <h2 className="text-lg font-semibold mb-4">Comment</h2>
-              <textarea
-                className="w-full border rounded-lg p-4 mb-4 focus:outline-none focus:ring-2 focus:ring-black"
-                rows="4"
-                placeholder="What are your thoughts?"
-                disabled={!isLoggedIn}
-                onClick={() => {
-                  if (!isLoggedIn) {
-                    alert("กรุณา Login ก่อนถึงจะสามารถคอมเมนต์ได้");
-                  }
-                }}
-              ></textarea>
-              <div className="flex justify-end">
-                <button
-                  className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
-                  onClick={() => {
-                    if (!isLoggedIn) {
-                      alert("กรุณา Login ก่อนถึงจะส่งคอมเมนต์ได้");
-                    }
-                  }}
-                >
-                  Send
-                </button>
-              </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleCopyLink}
+                className="flex items-center gap-2 px-4 py-2 border border-black rounded-full hover:bg-gray-100"
+              >
+                <IoCopyOutline /> <span>Copy</span>
+              </button>
+              <button
+                onClick={() => handleShare("facebook")}
+                className="w-10 h-10 flex items-center justify-center border border-black rounded-full hover:bg-gray-100"
+              >
+                <FaFacebookF />
+              </button>
+              <button
+                onClick={() => handleShare("linkedin")}
+                className="w-10 h-10 flex items-center justify-center border border-black rounded-full hover:bg-gray-100"
+              >
+                <FaLinkedinIn />
+              </button>
+              <button
+                onClick={() => handleShare("twitter")}
+                className="w-10 h-10 flex items-center justify-center border border-black rounded-full hover:bg-gray-100"
+              >
+                <FaTwitter />
+              </button>
             </div>
           </div>
 
-          {/* Right Content (Author Profile) */}
-          <div>
-            <div className="bg-[#F5F3F0] rounded-xl p-6 shadow-md flex flex-col items-center">
-              <img
-                src={thomson}
-                alt="Author"
-                className="w-24 h-24 rounded-full object-cover mb-4"
-              />
-              <div className="text-center">
-                <p className="text-gray-400 text-xs uppercase mb-1">Author</p>
-                <h3 className="text-lg font-bold mb-2 text-[#26231E]">
-                  {post.author || "Thompson P."}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  I am a pet enthusiast and freelance writer who specializes in
-                  animal behavior and care. With a deep love for cats, I enjoy
-                  sharing insights on feline companionship and wellness. When
-                  I'm not writing, I spend time volunteering at my local animal
-                  shelter, helping cats find loving homes.
-                </p>
+          {/* Comment Input */}
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold mb-4">Comments</h2>
+            <textarea
+              className="w-full border rounded-lg p-4 mb-4 focus:outline-none focus:ring-2 focus:ring-black"
+              rows="3"
+              placeholder="What are your thoughts?"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              disabled={!user}
+            />
+            <div className="flex justify-end">
+              <button
+                className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition"
+                onClick={handleComment}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+
+          {/* Comment List */}
+          <div className="mt-6 space-y-6">
+            {comments.length === 0 && (
+              null
+            )}
+            {comments.map((c, i) => (
+              <div key={i} className="pb-6 border-b border-gray-200">
+                <div className="flex items-start space-x-4">
+                  <img
+                    src={c.users?.profile_pic || "/default-avatar.png"}
+                    alt={c.users?.name || "user"}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold text-[#26231E]">
+                      {c.users?.name || "Unknown"}
+                    </p>
+                    <p className="text-xs text-gray-400 mb-2">
+                      {new Date(c.created_at).toLocaleString("th-TH", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <p className="text-gray-700 leading-6 whitespace-pre-wrap">
+                      {c.comment_text}
+                    </p>
+                  </div>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Author */}
+        <div>
+          <div className="bg-[#F5F3F0] rounded-xl p-6 shadow-md flex flex-col items-center">
+            <img
+              src={authorImage}
+              alt="Author"
+              className="w-24 h-24 rounded-full object-cover mb-4"
+            />
+            <div className="text-center">
+              <p className="text-gray-400 text-xs uppercase mb-1">Author</p>
+              <h3 className="text-lg font-bold mb-2 text-[#26231E]">
+                {post.author || "Thompson P."}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                I am a pet enthusiast and freelance writer who specializes in
+                animal behavior and care. With a deep love for cats, I enjoy
+                sharing insights on feline companionship and wellness.
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <Footer />
-    </>
+    </div>
   );
 }
 
