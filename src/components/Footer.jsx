@@ -1,6 +1,7 @@
 import linkedin from "../assets/icons/linkedin.png";
 import github from "../assets/icons/github.png";
 import google from "../assets/icons/google.png";
+
 export function Footer() {
   return (
     <>
@@ -9,19 +10,27 @@ export function Footer() {
           <div className="font-medium leading-6 text-[#43403B]">
             Get in touch
           </div>
-          <a href="">
-            <img src={linkedin} alt="logo" />
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={linkedin} alt="LinkedIn logo" />
           </a>
-          <a href="">
-            <img src={github} alt="logo" />
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={github} alt="GitHub logo" />
           </a>
-          <a href="">
-            <img src={google} alt="logo" />
+          <a href="#">
+            <img src={google} alt="Email icon" />
           </a>
         </div>
         <a
-          href=""
-          className="text-[#26231E] font-medium leading-6 underline underline-offset-0  decoration-gray-500"
+          href="/"
+          className="text-[#26231E] font-medium leading-6 underline underline-offset-0 decoration-gray-500"
         >
           Home page
         </a>
