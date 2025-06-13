@@ -11,7 +11,6 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
-import thomson from "../assets/images/thomson.png";
 import authorImage from "../assets/images/authorImage.png";
 import ReactMarkdown from "react-markdown";
 
@@ -50,21 +49,27 @@ function ViewPostPage() {
         setHasLiked(!!likeData);
       }
 
-      const { data: commentData } = await supabase
-        .from("comments")
-        .select("comment_text, created_at, users(name, profile_pic)")
-        .eq("post_id", id)
-        .order("created_at", { ascending: false });
+      const { data: commentData, error: commentError } = await supabase
+  .from("comments")
+  .select("comment_text, created_at, users(name, profile_pic)")
+  .eq("post_id", id)
+  .order("created_at", { ascending: false });
+
+console.log("🧪 commentData:", commentData);
+console.log("🧪 commentError:", commentError);
+
+
 
       if (commentData) setComments(commentData);
       setLoading(false);
     }
+    
 
     fetchData();
   }, [id, user]);
 
   const handleLikeToggle = async () => {
-    if (!user) return alert("กรุณา Login ก่อน");
+    if (!user) return alert("Please log in first");
 
     if (hasLiked) {
       await supabase
@@ -90,12 +95,12 @@ function ViewPostPage() {
   };
 
   const handleComment = async () => {
-    if (!user) return alert("กรุณา Login ก่อน");
-    if (!comment.trim()) return toast.warning("พิมพ์คอมเมนต์ก่อน");
+    if (!user) return alert("Please log in first");
+    if (!comment.trim()) return toast.warning("Please write a comment first");
 
     const { error } = await supabase.from("comments").insert({
       post_id: id,
-      user_id: user.id,
+      user_id: user?.id,
       comment_text: comment,
     });
 
@@ -112,13 +117,13 @@ function ViewPostPage() {
         ...comments,
       ]);
       setComment("");
-      toast.success("ส่งคอมเมนต์แล้ว!");
-    } else toast.error("ส่งไม่สำเร็จ");
+      toast.success("Comment submitted!");
+    } else toast.error("Failed to send comment");
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success("คัดลอกลิงก์แล้ว");
+    toast.success("Link copied to clipboard");
   };
 
   const handleShare = (platform) => {
@@ -136,7 +141,7 @@ function ViewPostPage() {
   if (loading)
     return <div className="text-center py-10 text-gray-500">Loading...</div>;
   if (!post)
-    return <div className="text-center py-10 text-red-500">ไม่พบโพสต์</div>;
+    return <div className="text-center py-10 text-red-500">Post not found</div>;
 
   return (
     <div className="mt-[60px] lg:mt-[80px] max-w-6xl mx-auto p-4 sm:p-8">
@@ -234,9 +239,7 @@ function ViewPostPage() {
 
           {/* Comment List */}
           <div className="mt-6 space-y-6">
-            {comments.length === 0 && (
-              null
-            )}
+            {comments.length === 0 && null}
             {comments.map((c, i) => (
               <div key={i} className="pb-6 border-b border-gray-200">
                 <div className="flex items-start space-x-4">

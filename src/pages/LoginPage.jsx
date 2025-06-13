@@ -34,6 +34,7 @@ export default function LoginPage() {
         email: form.email,
         name: data.user.user_metadata?.name,
         username: data.user.user_metadata?.username,
+        id: data.user.id,
       });
 
       navigate("/");
