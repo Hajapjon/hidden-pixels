@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { IoCopyOutline } from "react-icons/io5";
 import thomson from "../assets/images/thomson.png";
+import authorImage from "../assets/images/authorImage.png";
 import ReactMarkdown from "react-markdown";
 
 function ViewPostPage() {
@@ -154,7 +155,7 @@ function ViewPostPage() {
               {post.category || "General"}
             </span>
             <span>
-              {new Date(post.date).toLocaleDateString("th-TH", {
+              {new Date(post.date).toLocaleDateString("en-En", {
                 day: "2-digit",
                 month: "long",
                 year: "numeric",
@@ -234,7 +235,7 @@ function ViewPostPage() {
           {/* Comment List */}
           <div className="mt-6 space-y-6">
             {comments.length === 0 && (
-              <p className="text-gray-500 text-sm">ยังไม่มีคอมเมนต์</p>
+              null
             )}
             {comments.map((c, i) => (
               <div key={i} className="pb-6 border-b border-gray-200">
@@ -271,7 +272,7 @@ function ViewPostPage() {
         <div>
           <div className="bg-[#F5F3F0] rounded-xl p-6 shadow-md flex flex-col items-center">
             <img
-              src={thomson}
+              src={authorImage}
               alt="Author"
               className="w-24 h-24 rounded-full object-cover mb-4"
             />
