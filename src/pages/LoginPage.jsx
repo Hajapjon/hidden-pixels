@@ -19,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:4001/api/login", {
+      const res = await fetch("https://blog-post-server-one.vercel.app/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

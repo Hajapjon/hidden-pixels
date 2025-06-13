@@ -22,7 +22,7 @@ export default function SignupPage() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("http://localhost:4001/api/signup", {
+      const res = await fetch("https://blog-post-server-one.vercel.app/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
